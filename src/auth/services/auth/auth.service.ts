@@ -3,6 +3,7 @@ import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { UserRole } from 'src/user/entities/user.entity';
 
 export interface UserLocalInfo {
   id: number;
@@ -34,13 +35,13 @@ export class AuthService {
     };
   }
 
-  async register(user: CreateUserDto) {
+  async register(user: CreateUserDto, role: UserRole) {
     const userOnDB = await this.userService.findUserByUsername(user.username);
 
     if (userOnDB) {
       throw new NotAcceptableException('Username already exists');
     }
 
-    return this.userService.create(user);
+    return this.userService.create(user, role);
   }
 }

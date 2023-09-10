@@ -1,4 +1,12 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Param,
+  ParseEnumPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
 import {
   AuthService,
@@ -6,6 +14,7 @@ import {
 } from 'src/auth/services/auth/auth.service';
 import { User } from 'src/user/decorators/user.decorator';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UserRole } from 'src/user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +26,11 @@ export class AuthController {
     return await this.authService.login(user);
   }
 
-  @Post('register')
-  async register(@Body() body: CreateUserDto) {
-    return await this.authService.register(body);
+  @Post('register/:role')
+  async register(
+    @Body() body: CreateUserDto,
+    @Param('role', new ParseEnumPipe(UserRole)) role: UserRole,
+  ) {
+    return await this.authService.register(body, role);
   }
 }
